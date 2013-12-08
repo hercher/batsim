@@ -37,25 +37,25 @@ struct state {
  */
 static struct state batstate[] = {
 	/*OFF*/
-	{"OFF", 	0,   	2, 	(struct successor[]){{90, &batstate[0]}, {10, &batstate[1]}}},
+	{"OFF",		0,		2,		(struct successor[]){{90, &batstate[0]}, {10, &batstate[1]}}},
 	/* UP */
-	{"UP0", 	1,   	2, 	(struct successor[]){{90, &batstate[2]}, {10, &batstate[15]}}},
-	{"UP1", 	4,   	2, 	(struct successor[]){{90, &batstate[3]}, {10, &batstate[14]}}},
-	{"UP2", 	8,   	2, 	(struct successor[]){{90, &batstate[4]}, {10, &batstate[13]}}},
-	{"UP3", 	16,  	2, 	(struct successor[]){{90, &batstate[5]}, {10, &batstate[12]}}},
-	{"UP4", 	32,  	2, 	(struct successor[]){{90, &batstate[6]}, {10, &batstate[11]}}},
-	{"UP5", 	64,  	2, 	(struct successor[]){{90, &batstate[7]}, {10, &batstate[10]}}},
-	{"UP6", 	128, 	2, 	(struct successor[]){{90, &batstate[8]}, {10, &batstate[9] }}},
+	{"UP0",		1,		2,		(struct successor[]){{90, &batstate[2]}, {10, &batstate[15]}}},
+	{"UP1",		4,		2,		(struct successor[]){{90, &batstate[3]}, {10, &batstate[14]}}},
+	{"UP2",		8,		2,		(struct successor[]){{90, &batstate[4]}, {10, &batstate[13]}}},
+	{"UP3",		16,		2,		(struct successor[]){{90, &batstate[5]}, {10, &batstate[12]}}},
+	{"UP4",		32,		2,		(struct successor[]){{90, &batstate[6]}, {10, &batstate[11]}}},
+	{"UP5",		64,		2,		(struct successor[]){{90, &batstate[7]}, {10, &batstate[10]}}},
+	{"UP6",		128,	2,		(struct successor[]){{90, &batstate[8]}, {10, &batstate[9] }}},
 	/* FULL ON */
-	{"ON", 		255, 	2,	(struct successor[]){{50, &batstate[8]}, {50, &batstate[9]}}},
+	{"ON",		255,	2,		(struct successor[]){{50, &batstate[8]}, {50, &batstate[9]}}},
 	/* DOWN */
-	{"DOWN0", 	128,   	2, 	(struct successor[]){{90, &batstate[10]}, {10, &batstate[7]}}},
-	{"DOWN1", 	64,   	2, 	(struct successor[]){{90, &batstate[11]}, {10, &batstate[6]}}},
-	{"DOWN2", 	32,   	2, 	(struct successor[]){{90, &batstate[12]}, {10, &batstate[5]}}},
-	{"DOWN3", 	16,  	2, 	(struct successor[]){{90, &batstate[13]}, {10, &batstate[4]}}},
-	{"DOWN4", 	8,  	2, 	(struct successor[]){{90, &batstate[14]}, {10, &batstate[3]}}},
-	{"DOWN5", 	4,  	2, 	(struct successor[]){{90, &batstate[15]}, {10, &batstate[2]}}},
-	{"DOWN6", 	1, 		2, 	(struct successor[]){{90, &batstate[0] }, {10, &batstate[1]}}},
+	{"DOWN0",	128,	2,		(struct successor[]){{90, &batstate[10]}, {10, &batstate[7]}}},
+	{"DOWN1",	64,		2,		(struct successor[]){{90, &batstate[11]}, {10, &batstate[6]}}},
+	{"DOWN2",	32,		2,		(struct successor[]){{90, &batstate[12]}, {10, &batstate[5]}}},
+	{"DOWN3",	16,		2,		(struct successor[]){{90, &batstate[13]}, {10, &batstate[4]}}},
+	{"DOWN4",	8,		2,		(struct successor[]){{90, &batstate[14]}, {10, &batstate[3]}}},
+	{"DOWN5",	4,		2,		(struct successor[]){{90, &batstate[15]}, {10, &batstate[2]}}},
+	{"DOWN6",	1,		2,		(struct successor[]){{90, &batstate[0] }, {10, &batstate[1]}}},
 };
 
 static struct state *cur_state[BATS];
@@ -132,7 +132,7 @@ ISR(TIMER1_COMPA_vect) {
 static inline void setup_timer1(void) {
 
 	/* timer at full speed */
-    TCCR1B = 1;
+	TCCR1B = 1;
 	OCR1A = 1;
 }
 
@@ -198,26 +198,26 @@ int main(void) {
 	PWM_PORT = 0;
 	sei();
 
-    while(1) {
-    	enable_ext_int();
-    	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-    	sleep_mode();
-        /* awake */
-    	disable_ext_int();
-        enable_timer1();
-        for(steps = 0; steps < (BAT_TIME * 1000) / STEP_DURATION; steps++) {
-            for(i = 0; i < BATS; i++) {
-            	next = get_next_state(cur_state[i]);
-            	if(next) {
-            		cur_state[i] = next;
-            	}
-            	pwm_setting[i] = cur_state[i]->pwm;
-            }
-        	_delay_ms(STEP_DURATION);
-        }
-        disable_timer1();
-        reset_pwm_settings();
-        PWM_PORT = 0;
-    }
-    return 0;
+	while(1) {
+		enable_ext_int();
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+		/* awake */
+		disable_ext_int();
+		enable_timer1();
+		for(steps = 0; steps < (BAT_TIME * 1000) / STEP_DURATION; steps++) {
+			for(i = 0; i < BATS; i++) {
+				next = get_next_state(cur_state[i]);
+				if(next) {
+					cur_state[i] = next;
+				}
+				pwm_setting[i] = cur_state[i]->pwm;
+			}
+			_delay_ms(STEP_DURATION);
+		}
+		disable_timer1();
+		reset_pwm_settings();
+		PWM_PORT = 0;
+	}
+	return 0;
 }
